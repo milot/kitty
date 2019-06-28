@@ -47,7 +47,7 @@ func startLeaderNode(currentNode ClusterNode) {
 	listener, err := net.Listen("tcp", fmt.Sprint(":"+currentNode.Port))
 
 	if err != nil {
-		fmt.Println("But the port is already in use!")
+		fmt.Println("Port is already in use!")
 	} else {
 		for {
 			inboundConnection, err := listener.Accept()
