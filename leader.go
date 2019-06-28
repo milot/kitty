@@ -44,7 +44,6 @@ func main() {
 }
 
 func startLeaderNode(currentNode ClusterNode) {
-
 	listener, err := net.Listen("tcp", fmt.Sprint(":"+currentNode.Port))
 
 	if err != nil {
