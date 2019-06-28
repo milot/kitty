@@ -64,7 +64,6 @@ func startLeaderNode(currentNode ClusterNode) {
 				fmt.Println(requestMessage.Message)
 
 				text := "Message sent successfully..."
-				//responseMessage := getAddToClusterMessage(currentNode, requestMessage.From, text)
 				json.NewEncoder(inboundConnection).Encode(&text)
 				inboundConnection.Close()
 			}
