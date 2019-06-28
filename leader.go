@@ -61,9 +61,6 @@ func startLeaderNode(currentNode ClusterNode) {
 				var requestMessage Message
 				json.NewDecoder(inboundConnection).Decode(&requestMessage)
 				fmt.Println(requestMessage.Message)
-
-				text := "Message sent successfully..."
-				json.NewEncoder(inboundConnection).Encode(&text)
 				inboundConnection.Close()
 			}
 		}
