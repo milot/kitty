@@ -8,21 +8,8 @@ import (
 	"net"
 	"strings"
 	"time"
+	"kitty/node"
 )
-
-// ClusterNode represents node metadata
-type ClusterNode struct {
-	ID        int    `json:"id"`
-	IPAddress string `json:"ipAddress"`
-	Port      string `json:"port"`
-}
-
-// Message represents a format for a Request/Response to for adding a node to a cluster
-type Message struct {
-	From    ClusterNode `json:"from"`
-	To      ClusterNode `json:"to"`
-	Message string      `json:"message"`
-}
 
 func main() {
 	clusterIP := flag.String("connectTo", "127.0.0.1:8001", "IP Address for nodes to connect")
@@ -34,13 +21,13 @@ func main() {
 	currentNodeID := rand.Intn(2048)
 	currentNodeIP, _ := net.InterfaceAddrs()
 
-	currentNode := ClusterNode{
+	currentNode := node.Node{
 		ID:        currentNodeID,
 		IPAddress: currentNodeIP[0].String(),
 		Port:      *port,
 	}
 
-	destinationNode := ClusterNode{
+	destinationNode := node.Node{
 		ID:        -1,
 		IPAddress: strings.Split(*clusterIP, ":")[0],
 		Port:      strings.Split(*clusterIP, ":")[1],
@@ -55,14 +42,14 @@ func main() {
 
 }
 
-func constructMessage(source ClusterNode, dest ClusterNode, message string) Message {
-	return Message{
-		From: ClusterNode{
+func constructMessage(source node.Node, dest node.Node, message string) node.Message {
+	return node.Message {
+		From: node.Node {
 			ID:        source.ID,
 			IPAddress: source.IPAddress,
 			Port:      source.Port,
 		},
-		To: ClusterNode{
+		To: node.Node {
 			ID:        dest.ID,
 			IPAddress: dest.IPAddress,
 			Port:      dest.Port,
@@ -71,7 +58,7 @@ func constructMessage(source ClusterNode, dest ClusterNode, message string) Mess
 	}
 }
 
-func startFollowerNode(currentNode ClusterNode, destinationNode ClusterNode) {
+func startFollowerNode(currentNode node.Node, destinationNode node.Node) {
 	outboundConnection, err := net.DialTimeout("tcp", destinationNode.IPAddress+":"+destinationNode.Port, time.Duration(10)*time.Second)
 
 	if err != nil {
@@ -84,7 +71,7 @@ func startFollowerNode(currentNode ClusterNode, destinationNode ClusterNode) {
 		json.NewEncoder(outboundConnection).Encode(&requestMessage)
 
 		decoder := json.NewDecoder(outboundConnection)
-		var responseMessage Message
+		var responseMessage node.Message
 		decoder.Decode(&responseMessage)
 		fmt.Printf("Message sent to the leader %v:%v\n", destinationNode.IPAddress, destinationNode.Port)
 	}
